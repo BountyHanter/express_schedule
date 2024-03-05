@@ -14,33 +14,86 @@ function updateClock() {
 
 setInterval(updateClock, 1000);
 
-async function updateCurrentClass() {
-    const timetableResponse = await fetch('../data/timetable.json');
-    const timetable = await timetableResponse.json();
-    const currentDay = new Date().toLocaleDateString('ru-RU', { weekday: 'long' }).toLowerCase();
-    const currentTime = new Date();
-    const currentHours = currentTime.getHours();
-    const currentMinutes = currentTime.getMinutes();
-    const totalMinutes = currentHours * 60 + currentMinutes;
+// Есть библиотеки для работы со временем
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('../data/combined_schedule.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const schedule = data.schedule; // Теперь обращаемся к массиву через data.schedule
+            const now = new Date();
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayOfWeekText = daysOfWeek[now.getDay()];
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            let TimeRing = Infinity
 
-    const todayTimetable = timetable[currentDay] || [];
-    let currentClassInfo = 'Пар нет';
+            const todaySchedule = schedule.filter(pair => pair.dayOfWeek === dayOfWeekText);
+            const currentPair = todaySchedule.find(pair => {
+                const startTime = parseInt(pair.startTimeFirstHalf.split(':')[0]) * 60 + parseInt(pair.startTimeFirstHalf.split(':')[1]);
+                const endTime = parseInt(pair.endTimeSecondHalf.split(':')[0]) * 60 + parseInt(pair.endTimeSecondHalf.split(':')[1]);
+                console.log(startTime)
+                console.log(endTime)
+                console.log(currentTime)
+                return currentTime >= startTime && currentTime <= endTime;
+            });
 
-    for (let classInfo of todayTimetable) {
-        const startTimeFirstHalf = classInfo.startTimeFirstHalf.split(':');
-        const endTimeSecondHalf = classInfo.endTimeSecondHalf.split(':');
-        const startMinutes = parseInt(startTimeFirstHalf[0]) * 60 + parseInt(startTimeFirstHalf[1]);
-        const endMinutes = parseInt(endTimeSecondHalf[0]) * 60 + parseInt(endTimeSecondHalf[1]);
+            // Функция для преобразования времени из формата "часы:минуты" в минуты
+            const timeToMinutes = (timeString) => {
+                const [hours, minutes] = timeString.split(':').map(Number);
+                return hours * 60 + minutes;
+            };
 
-        if (totalMinutes >= startMinutes && totalMinutes <= endMinutes) {
-            currentClassInfo = `Сейчас пара - ${classInfo.pairNumber}, ${classInfo.subject}, ${classInfo.auditorium}`;
-            break;
-        }
-    }
+// Переменная для хранения флага, найдено ли уже ближайшее время
+            let foundClosestTime = false;
 
-    document.querySelector('.pair').textContent = currentClassInfo;
-}
+// Перебираем текущее расписание
+            for (const pair of todaySchedule) {
+                if (foundClosestTime) {
+                    break; // Если уже найдено ближайшее время, прерываем цикл
+                }
 
-updateCurrentClass();
-// Вы можете вызывать эту функцию регулярно, например, каждую минуту, чтобы обновлять информацию о текущей паре
-setInterval(updateCurrentClass, 60000);
+                const times = [
+                    pair.startTimeFirstHalf,
+                    pair.endTimeFirstHalf,
+                    pair.startTimeSecondHalf,
+                    pair.endTimeSecondHalf
+                ];
+
+                // Перебираем все времена в паре
+                for (const time of times) {
+                    const timeInMinutes = timeToMinutes(time);
+
+                    // Если время в текущей паре больше текущего времени, выводим его
+                    if (timeInMinutes > currentTime) {
+                        TimeRing = time
+                        console.log(`Ближайшее время в текущей паре: ${time}`);
+                        // Устанавливаем флаг в true, чтобы указать, что ближайшее время найдено
+                        foundClosestTime = true;
+                        // Завершаем выполнение цикла
+                        break;
+                    }
+                }
+            }
+            if (currentPair) {
+                console.log(currentPair)
+                console.log(`Предмет: ${currentPair.subject}, Аудитория: ${currentPair.auditorium}, Номер пары: ${currentPair.pairNumber}`);
+                const pairElement = document.querySelector('.pair');
+                pairElement.textContent = `Предмет: ${currentPair.subject}, Аудитория: ${currentPair.auditorium}, Номер пары: ${currentPair.pairNumber}, Ближайший звонок: ${TimeRing} `;
+            }
+            else
+                console.log('Перемена')
+        })
+        .catch(error => console.error('Fetch error:', error));
+});
+
+
+
+
+
+
+
+

@@ -1,5 +1,5 @@
 {
-    "Понедельник": [
+    "schedule": [
         {
             "pairNumber": 1,
             "subject": "Стандарты ИКТ",
@@ -9,7 +9,8 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "9:50",
             "endTimeSecondHalf": "10:35",
-            "breakTimeAfterSecondHalf": "10 мин"
+            "breakTimeAfterSecondHalf": "10 мин",
+            "dayOfWeek": "Monday"
         },
         {
             "pairNumber": 2,
@@ -20,7 +21,8 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "11:35",
             "endTimeSecondHalf": "12:20",
-            "breakTimeAfterSecondHalf": "40 мин"
+            "breakTimeAfterSecondHalf": "40 мин",
+            "dayOfWeek": "Monday"
         },
         {
             "pairNumber": 3,
@@ -31,7 +33,8 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "13:50",
             "endTimeSecondHalf": "14:35",
-            "breakTimeAfterSecondHalf": "10 мин"
+            "breakTimeAfterSecondHalf": "10 мин",
+            "dayOfWeek": "Monday"
         },
         {
             "pairNumber": 4,
@@ -42,10 +45,9 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "15:35",
             "endTimeSecondHalf": "16:20",
-            "breakTimeAfterSecondHalf": "5 мин"
-        }
-    ],
-    "Вторник": [
+            "breakTimeAfterSecondHalf": "5 мин",
+            "dayOfWeek": "Monday"
+        },
         {
             "pairNumber": 3,
             "subject": "Математическая статистика",
@@ -55,7 +57,8 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "13:50",
             "endTimeSecondHalf": "14:35",
-            "breakTimeAfterSecondHalf": "10 мин"
+            "breakTimeAfterSecondHalf": "10 мин",
+            "dayOfWeek": "Tuesday"
         },
         {
             "pairNumber": 4,
@@ -66,10 +69,9 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "15:35",
             "endTimeSecondHalf": "16:20",
-            "breakTimeAfterSecondHalf": "5 мин"
-        }
-    ],
-    "Среда": [
+            "breakTimeAfterSecondHalf": "5 мин",
+            "dayOfWeek": "Tuesday"
+        },
         {
             "pairNumber": 1,
             "subject": "Web-программирование на JavaScript",
@@ -79,7 +81,8 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "9:50",
             "endTimeSecondHalf": "10:35",
-            "breakTimeAfterSecondHalf": "10 мин"
+            "breakTimeAfterSecondHalf": "10 мин",
+            "dayOfWeek": "Wednesday"
         },
         {
             "pairNumber": 2,
@@ -90,10 +93,9 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "11:35",
             "endTimeSecondHalf": "12:20",
-            "breakTimeAfterSecondHalf": "40 мин"
-        }
-    ],
-    "Четверг": [
+            "breakTimeAfterSecondHalf": "40 мин",
+            "dayOfWeek": "Wednesday"
+        },
         {
             "pairNumber": 1,
             "subject": "Функциональный анализ",
@@ -103,7 +105,8 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "9:50",
             "endTimeSecondHalf": "10:35",
-            "breakTimeAfterSecondHalf": "10 мин"
+            "breakTimeAfterSecondHalf": "10 мин",
+            "dayOfWeek": "Thursday"
         },
         {
             "pairNumber": 2,
@@ -114,11 +117,9 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "11:35",
             "endTimeSecondHalf": "12:20",
-            "breakTimeAfterSecondHalf": "40 мин"
-        }
-    ],
-    "Пятница": [],
-    "Суббота": [
+            "breakTimeAfterSecondHalf": "40 мин",
+            "dayOfWeek": "Thursday"
+        },
         {
             "pairNumber": 3,
             "subject": "Базы данных",
@@ -128,7 +129,8 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "13:50",
             "endTimeSecondHalf": "14:35",
-            "breakTimeAfterSecondHalf": "10 мин"
+            "breakTimeAfterSecondHalf": "10 мин",
+            "dayOfWeek": "Saturday"
         },
         {
             "pairNumber": 4,
@@ -139,7 +141,8 @@
             "breakTimeAfterFirstHalf": "5 мин",
             "startTimeSecondHalf": "15:35",
             "endTimeSecondHalf": "16:20",
-            "breakTimeAfterSecondHalf": "5 мин"
+            "breakTimeAfterSecondHalf": "5 мин",
+            "dayOfWeek": "Saturday"
         }
     ]
 }
