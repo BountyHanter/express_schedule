@@ -84,12 +84,53 @@ document.addEventListener("DOMContentLoaded", function() {
                 const pairElement = document.querySelector('.pair');
                 pairElement.textContent = `Предмет: ${currentPair.subject}, Аудитория: ${currentPair.auditorium}, Номер пары: ${currentPair.pairNumber}, Ближайший звонок: ${TimeRing} `;
             }
-            else
-                console.log('Перемена')
+            else {
+                const pairElement = document.querySelector('.pair');
+                pairElement.textContent = `Перемена\\Нет пар`;
+            }
         })
         .catch(error => console.error('Fetch error:', error));
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    var today = new Date();
+    var dayOfWeek = today.getDay(); // Возвращает день недели от 0 (воскресенье) до 6 (суббота)
+
+    var schedules = document.querySelectorAll('.schudele table');
+    // Сначала скрываем все таблицы
+    schedules.forEach(function(schedule) {
+        schedule.style.display = 'none';
+    });
+
+    // Отображаем таблицу для текущего дня, если это не воскресенье
+    if(dayOfWeek > 0) { // dayOfWeek == 0 это воскресенье, которое мы пропускаем
+        var scheduleIds = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        var currentScheduleId = scheduleIds[dayOfWeek - 1]; // -1 потому что в массиве понедельник имеет индекс 0
+        var currentSchedule = document.getElementById(currentScheduleId);
+        if (currentSchedule) {
+            currentSchedule.style.display = 'table';
+        }
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const arrow = document.querySelector('.arrow');
+    const startTime = new Date(1970, 0, 1, 9, 0, 0); // Начало движения стрелки в 9:00 каждый день
+
+    function updateArrowPosition() {
+        const now = new Date();
+        const nowMinutes = now.getHours() * 60 + now.getMinutes(); // Текущее время в минутах
+        const startMinutes = startTime.getHours() * 60 + startTime.getMinutes(); // Время начала в минутах
+
+        if (nowMinutes >= startMinutes && nowMinutes <= (startMinutes + 7*60 + 20)) { // Если текущее время от 9:00 до 16:20
+            const minutesPassed = nowMinutes - startMinutes; // Сколько минут прошло с 9:00
+            let newPosition = minutesPassed * 2; // Новая позиция в пикселях (Отношение 1 минута - 2 пикселя)
+            arrow.style.top = `${newPosition}px`;
+        }
+    }
+
+    setInterval(updateArrowPosition, 600); // Обновляем позицию стрелки каждую секунду
+});
 
 
 
