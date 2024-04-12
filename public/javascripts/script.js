@@ -136,50 +136,110 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateArrowPosition, 600); // Обновляем позицию стрелки каждую секунду
 });
 
-function initializeScheduleCheck() {
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    let scheduleData; // Переменная для хранения данных расписания
+
+    // Загружаем данные из базы данных при загрузке страницы
     fetch('/api/schedule')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            const schedule = data.map(item => ({
-                ...item,
-                // Преобразуем строки времени в объекты Date для удобства сравнения
-                starttimefirsthalf: new Date(`1970/01/01 ${item.starttimefirsthalf}`),
-                endtimefirsthalf: new Date(`1970/01/01 ${item.endtimefirsthalf}`),
-                starttimesecondhalf: new Date(`1970/01/01 ${item.starttimesecondhalf}`),
-                endtimesecondhalf: new Date(`1970/01/01 ${item.endtimesecondhalf}`),
-                // Флаги для отслеживания, было ли уже показано уведомление
-                firstHalfNotified: false,
-                secondHalfNotified: false,
-                endFirstHalfNotified: false,
-                endSecondHalfNotified: false
+            // Получаем все значения колонок из таблицы
+            const allValues = data.schedule.map(item => ({
+                starttimefirsthalf: item.starttimefirsthalf,
+                endtimefirsthalf: item.endtimefirsthalf,
+                starttimesecondhalf: item.starttimesecondhalf,
+                endtimesecondhalf: item.endtimesecondhalf
             }));
 
-            setInterval(() => {
-                const now = new Date();
-                const currentTime = new Date(`1970/01/01 ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`);
+            // Создаем объект Set, чтобы получить уникальные значения
+            const uniqueValuesSet = new Set();
 
-                schedule.forEach(item => {
-                    // Проверяем для каждого времени начала и выводим сообщение за 2 минуты до начала
-                    // Начало первой половины
-                    checkAndNotify(item, 'starttimefirsthalf', currentTime, item.firstHalfNotified, 'Начало первой половины пары скоро', 'firstHalfNotified');
-                    // Начало второй половины
-                    checkAndNotify(item, 'starttimesecondhalf', currentTime, item.secondHalfNotified, 'Начало второй половины пары скоро', 'secondHalfNotified');
-                    // Конец первой половины
-                    checkAndNotify(item, 'endtimefirsthalf', currentTime, item.endFirstHalfNotified, 'Первая половина пары скоро закончится', 'endFirstHalfNotified');
-                    // Конец второй половины
-                    checkAndNotify(item, 'endtimesecondhalf', currentTime, item.endSecondHalfNotified, 'Вторая половина пары скоро закончится', 'endSecondHalfNotified');
-                });
-            }, 1000);
+            // Добавляем уникальные значения в объект Set
+            allValues.forEach(item => {
+                const { starttimefirsthalf, endtimefirsthalf, starttimesecondhalf, endtimesecondhalf } = item;
+                uniqueValuesSet.add(JSON.stringify({ starttimefirsthalf, endtimefirsthalf, starttimesecondhalf, endtimesecondhalf }));
+            });
+
+            // Преобразуем объект Set обратно в массив с уникальными значениями
+            uniqueScheduleData = Array.from(uniqueValuesSet).map(item => JSON.parse(item));
+            // Преобразование каждого элемента массива в формат Date
+            uniqueScheduleData.forEach(item => {
+                item.starttimefirsthalf = parseTime(item.starttimefirsthalf);
+                item.endtimefirsthalf = parseTime(item.endtimefirsthalf);
+                item.starttimesecondhalf = parseTime(item.starttimesecondhalf);
+                item.endtimesecondhalf = parseTime(item.endtimesecondhalf);
+            });
+
+            // Запускаем проверку времени каждую секунду
+            setInterval(() => checkTime(uniqueScheduleData), 1000);
         })
-        .catch(error => console.error('Ошибка при получении расписания:', error));
-}
+        .catch(error => {
+            console.error('Error:', error);
+        });
 
-function checkAndNotify(item, timeKey, currentTime, notifiedFlag, message, notifyProp) {
-    const timeDiff = (item[timeKey] - currentTime) / 60000; // Разница в минутах
-    if (timeDiff > 0 && timeDiff <= 2 && !notifiedFlag) {
-        console.log(message);
-        item[notifyProp] = true; // Установка флага, чтобы избежать повторного уведомления
+});
+
+let flag = false;
+
+function checkTime(scheduleData) {
+    // Получаем текущее время и преобразуем его в формат "часы:минуты:секунды"
+    const now = new Date();
+    const currentTimeString = now.toTimeString().split(' ')[0];
+
+    // Проверяем данные расписания
+    if (scheduleData) {
+        // Проходим по каждому элементу расписания
+        for (let i = 0; i < scheduleData.length; i++) {
+            // Создаем времена для сравнения, вычитаем 2 минуты для каждой части события
+            const newStartTimeFirstHalf = subtractMinutes(scheduleData[i].starttimefirsthalf, 2);
+            const newEndTimeFirstHalf = subtractMinutes(scheduleData[i].endtimefirsthalf, 2);
+            const newStartTimeSecondHalf = subtractMinutes(scheduleData[i].starttimesecondhalf, 2);
+            const newEndTimeSecondHalf = subtractMinutes(scheduleData[i].endtimesecondhalf, 2);
+
+            // Сравниваем текущее время с каждым временем начала и окончания каждой части события
+            if ((currentTimeString >= newStartTimeFirstHalf && currentTimeString < scheduleData[i].starttimefirsthalf) ||
+                (currentTimeString >= newEndTimeFirstHalf && currentTimeString < scheduleData[i].endtimefirsthalf) ||
+                (currentTimeString >= newStartTimeSecondHalf && currentTimeString < scheduleData[i].starttimesecondhalf) ||
+                (currentTimeString >= newEndTimeSecondHalf && currentTimeString < scheduleData[i].endtimesecondhalf)) {
+                // Если текущее время попадает в один из интервалов
+                if (!flag) {
+                    alert('Через 2 минуты звонок')
+                    flag = true;
+                }
+            }
+            // Проверяем, совпадает ли текущее время с каким-либо временем в расписании
+            if (currentTimeString === scheduleData[i].starttimefirsthalf ||
+                currentTimeString === scheduleData[i].endtimefirsthalf ||
+                currentTimeString === scheduleData[i].starttimesecondhalf ||
+                currentTimeString === scheduleData[i].endtimesecondhalf) {
+                flag = false; // Сбрасываем флаг
+            }
+        }
+    } else {
+        console.log('Schedule data is not loaded yet');
     }
 }
 
-initializeScheduleCheck();
+function subtractMinutes(timeString, minutes) {
+    const parts = timeString.split(':');
+    const date = new Date();
+    date.setHours(parts[0], parts[1] - minutes, parts[2]);
+    return date.toTimeString().split(' ')[0];
+}
+
+function parseTime(timeString) {
+    const [hours, minutes, seconds] = timeString.split(':');
+    const date = new Date(0, 0, 0, hours, minutes, seconds);
+    return date.toTimeString().split(' ')[0];
+}

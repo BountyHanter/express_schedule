@@ -29,7 +29,7 @@ app.use('/users', usersRouter);
 var pool = new Pool({
   user: 'denis', // Ваше имя пользователя
   host: 'localhost',
-  database: 'web_js', // Название вашей базы данных
+  database: 'express_schedule', // Название вашей базы данных
   password: '14101999', // Ваш пароль
   port: 5432,
 });
